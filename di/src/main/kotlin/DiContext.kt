@@ -8,6 +8,10 @@ interface DiContext {
         t: Type<T>,
         f: () -> T,
     ): T
+
+    companion object {
+        operator fun invoke(): DiContext = MapBasedDiContext()
+    }
 }
 
 inline fun <C : DiContext, reified T> C.retrieve(dep: Loader<C, T>): T {
@@ -34,7 +38,7 @@ class Type<T>(private val t: KType, private val klass: Class<T>) {
     }
 }
 
-class MapBasedDiContext : DiContext {
+internal class MapBasedDiContext : DiContext {
     private val storage = mutableMapOf<Type<*>, Any?>()
     private val path = mutableSetOf<Type<*>>()
 
@@ -43,7 +47,7 @@ class MapBasedDiContext : DiContext {
         f: () -> T,
     ): T {
         if (t in path) {
-            error("Cyclic dependency detected")
+            error("Cyclic dependency detected: $path")
         }
         path.add(t)
 
