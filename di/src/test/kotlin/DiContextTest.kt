@@ -1,18 +1,19 @@
-import jstack.di.*
+package jstack.di
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DiContextTest {
     @Test
     fun contextTest() =
-        with(MapBasedDiContext()) {
+        with(DiContext()) {
             val a = retrieve(A)
             assertEquals("HelloHello", a.a())
         }
 
     @Test
     fun `extend and override`() =
-        with(ExtendedContext(MapBasedDiContext(), 1)) {
+        with(ExtendedContext(DiContext(), 1)) {
             val altB =
                 Loader<ExtendedContext, B> {
                     val mul = intProperty()
