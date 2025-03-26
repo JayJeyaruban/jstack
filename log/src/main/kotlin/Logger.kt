@@ -8,17 +8,11 @@ import kotlin.reflect.KProperty
 typealias PayloadBuilder = MutableMap<String, Any?>
 
 fun interface Logger {
-    fun log(
-        level: Level,
-        payload: PayloadBuilder.() -> Unit,
-    )
+    fun log(level: Level, payload: PayloadBuilder.() -> Unit)
 }
 
 class LoggerLoader internal constructor(private val lf: LoggerFactory) {
-    operator fun provideDelegate(
-        thisRef: Any?,
-        property: KProperty<*>,
-    ): ReadOnlyProperty<Any?, Logger> {
+    operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): ReadOnlyProperty<Any?, Logger> {
         val logger = lf.logger(CallSite.of())
         return ReadOnlyProperty { _, _ -> logger }
     }

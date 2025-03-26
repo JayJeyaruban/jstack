@@ -9,15 +9,9 @@ import java.io.ObjectOutputStream
 import java.io.OutputStream
 
 interface Codec {
-    fun <T> read(
-        inputStream: InputStream,
-        type: Type<T>,
-    ): T
+    fun <T> read(inputStream: InputStream, type: Type<T>): T
 
-    fun <T> write(
-        outputStream: OutputStream,
-        t: T,
-    )
+    fun <T> write(outputStream: OutputStream, t: T)
 
     companion object : Loader<DiContext, Codec> {
         override fun DiContext.load(): Codec = SerializableCodec
@@ -25,17 +19,11 @@ interface Codec {
 }
 
 internal object SerializableCodec : Codec {
-    override fun <T> read(
-        inputStream: InputStream,
-        type: Type<T>,
-    ): T {
+    override fun <T> read(inputStream: InputStream, type: Type<T>): T {
         return type.cast(ObjectInputStream(inputStream).readObject())
     }
 
-    override fun <T> write(
-        outputStream: OutputStream,
-        t: T,
-    ) {
+    override fun <T> write(outputStream: OutputStream, t: T) {
         ObjectOutputStream(outputStream).writeObject(t)
     }
 }

@@ -50,10 +50,7 @@ class ProcedureRouteLoader<C, I, O>(
     private val input: Type<I>,
     private val output: Type<O>,
 ) {
-    operator fun provideDelegate(
-        thisRef: Router<C>,
-        prop: KProperty<*>,
-    ): ReadOnlyProperty<Router<C>, ProcedureRoute<C, I, O>> {
+    operator fun provideDelegate(thisRef: Router<C>, prop: KProperty<*>): ReadOnlyProperty<Router<C>, ProcedureRoute<C, I, O>> {
         val wrapped = ProcedureRoute(prop.name, proc, input, output)
         thisRef.procedures.add(wrapped)
         return ReadOnlyProperty { _, _ -> wrapped }
@@ -61,17 +58,11 @@ class ProcedureRouteLoader<C, I, O>(
 }
 
 class RouterRoute<C, out R : Router<C>>(internal val path: String, internal val router: R) : ReadOnlyProperty<Router<C>, R> {
-    override fun getValue(
-        thisRef: Router<C>,
-        property: KProperty<*>,
-    ) = router
+    override fun getValue(thisRef: Router<C>, property: KProperty<*>) = router
 }
 
 class RouterRouteLoader<C, R : Router<C>>(private val router: R) {
-    operator fun provideDelegate(
-        thisRef: Router<C>,
-        prop: KProperty<*>,
-    ) = RouterRoute(prop.name, router).also {
+    operator fun provideDelegate(thisRef: Router<C>, prop: KProperty<*>) = RouterRoute(prop.name, router).also {
         thisRef.subRouters.add(it)
     }
 }

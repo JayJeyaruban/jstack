@@ -6,10 +6,9 @@ fun interface LoggerFactory {
     fun logger(callSite: CallSite): Logger
 
     companion object : LoggerFactory, Loader<Any, LoggerFactory> {
-        override fun logger(callSite: CallSite) =
-            Logger { level, payload ->
-                System.err.println("$level\t${callSite.fullPath}\t${buildMap { payload() }}")
-            }
+        override fun logger(callSite: CallSite) = Logger { level, payload ->
+            System.err.println("$level\t${callSite.fullPath}\t${buildMap { payload() }}")
+        }
 
         override fun Any.load(): LoggerFactory = LoggerFactory
     }

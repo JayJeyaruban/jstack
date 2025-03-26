@@ -15,20 +15,19 @@ private const val PORT = 8080
 
 class ClientServerTest {
     @Test
-    fun test() =
-        with(DiContext()) {
-            val ex = retrieve(Executor)
-            ex.execute {
-                val server = HttpServer.create(InetSocketAddress(PORT), 0)
-                install(server, Example)
-                server.start()
-            }
-
-            val input = "Hello world!"
-
-            val client = retrieve(TestClient)
-            assertEquals(input, client.call { nested.echo }(input))
+    fun test() = with(DiContext()) {
+        val ex = retrieve(Executor)
+        ex.execute {
+            val server = HttpServer.create(InetSocketAddress(PORT), 0)
+            install(server, Example)
+            server.start()
         }
+
+        val input = "Hello world!"
+
+        val client = retrieve(TestClient)
+        assertEquals(input, client.call { nested.echo }(input))
+    }
 }
 
 object Nested : Router<DiContext>() {

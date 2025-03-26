@@ -4,14 +4,13 @@ import kotlin.test.Test
 
 class LoggerTest {
     @Test
-    fun test() =
-        with(LogContext()) {
-            sampleFn()
-            val sample = SampleClass(this)
-            println("Created sample")
-            sample.sample()
-            sample.otherMethod()
-        }
+    fun test() = with(LogContext()) {
+        sampleFn()
+        val sample = SampleClass(this)
+        println("Created sample")
+        sample.sample()
+        sample.otherMethod()
+    }
 }
 
 fun LogContext.sampleFn() {
