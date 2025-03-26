@@ -4,10 +4,7 @@ import jstack.core.Loader
 import jstack.core.Type
 
 interface DiContext {
-    fun <T> getOrDefault(
-        t: Type<T>,
-        f: () -> T,
-    ): T
+    fun <T> getOrDefault(t: Type<T>, f: () -> T): T
 
     companion object {
         operator fun invoke(): DiContext = MapBasedDiContext()
@@ -24,10 +21,7 @@ internal class MapBasedDiContext : DiContext {
     private val storage = mutableMapOf<Type<*>, Any?>()
     private val path = mutableSetOf<Type<*>>()
 
-    override fun <T> getOrDefault(
-        t: Type<T>,
-        f: () -> T,
-    ): T {
+    override fun <T> getOrDefault(t: Type<T>, f: () -> T): T {
         if (t in path) {
             error("Cyclic dependency detected: $path")
         }

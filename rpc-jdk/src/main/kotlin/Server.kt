@@ -11,10 +11,7 @@ import jstack.rpc.ProcedureRoute
 import jstack.rpc.Router
 import jstack.rpc.traverse
 
-fun <C : DiContext> C.install(
-    server: HttpServer,
-    router: Router<C>,
-) = server.apply {
+fun <C : DiContext> C.install(server: HttpServer, router: Router<C>) = server.apply {
     val log by logger()
     executor = retrieve(Executor)
 
@@ -42,11 +39,7 @@ fun <C : DiContext> C.install(
     }
 }
 
-private fun <C : DiContext, I, O> C.execute(
-    proc: ProcedureRoute<C, I, O>,
-    codec: Codec,
-    ex: HttpExchange,
-) {
+private fun <C : DiContext, I, O> C.execute(proc: ProcedureRoute<C, I, O>, codec: Codec, ex: HttpExchange) {
     try {
         val args = codec.read(ex.requestBody, proc.input)
         val response = proc(this)(args)

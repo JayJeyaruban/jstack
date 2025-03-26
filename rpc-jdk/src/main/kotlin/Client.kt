@@ -49,18 +49,14 @@ fun interface ClientFactory {
     fun clientBuilder(): HttpClient.Builder
 
     companion object : jstack.core.Loader<DiContext, ClientFactory> {
-        override fun DiContext.load() =
-            ClientFactory {
-                HttpClient.newBuilder()
-                    .executor(retrieve(Executor))
-            }
+        override fun DiContext.load() = ClientFactory {
+            HttpClient.newBuilder()
+                .executor(retrieve(Executor))
+        }
     }
 }
 
-fun <C, R : Router<C>> DiContext.client(
-    router: R,
-    baseUrl: String,
-): Client<C, R> {
+fun <C, R : Router<C>> DiContext.client(router: R, baseUrl: String): Client<C, R> {
     val client = retrieve(ClientFactory).clientBuilder().build()
     return Client(router, client, retrieve(Codec), baseUrl)
 }

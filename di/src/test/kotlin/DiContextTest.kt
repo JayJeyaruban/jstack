@@ -5,28 +5,26 @@ import kotlin.test.assertEquals
 
 class DiContextTest {
     @Test
-    fun contextTest() =
-        with(DiContext()) {
-            val a = retrieve(A)
-            assertEquals("HelloHello", a.a())
-        }
+    fun contextTest() = with(DiContext()) {
+        val a = retrieve(A)
+        assertEquals("HelloHello", a.a())
+    }
 
     @Test
-    fun `extend and override`() =
-        with(ExtendedContext(DiContext(), 1)) {
-            val altB =
-                jstack.core.Loader<ExtendedContext, B> {
-                    val mul = intProperty()
-                    object : B {
-                        override fun b() = mul
-                    }
+    fun `extend and override`() = with(ExtendedContext(DiContext(), 1)) {
+        val altB =
+            jstack.core.Loader<ExtendedContext, B> {
+                val mul = intProperty()
+                object : B {
+                    override fun b() = mul
                 }
+            }
 
-            register(altB)
+        register(altB)
 
-            val a = retrieve(A)
-            assertEquals("Hello", a.a())
-        }
+        val a = retrieve(A)
+        assertEquals("Hello", a.a())
+    }
 }
 
 interface A {
@@ -46,10 +44,9 @@ interface B {
     fun b(): Int
 
     companion object : jstack.core.Loader<DiContext, B> {
-        override fun DiContext.load() =
-            object : B {
-                override fun b() = 2
-            }
+        override fun DiContext.load() = object : B {
+            override fun b() = 2
+        }
     }
 }
 
@@ -57,12 +54,8 @@ interface ExtendedContext : DiContext {
     fun intProperty(): Int
 
     companion object {
-        operator fun invoke(
-            inner: DiContext,
-            prop: Int,
-        ): ExtendedContext =
-            object : ExtendedContext, DiContext by inner {
-                override fun intProperty() = prop
-            }
+        operator fun invoke(inner: DiContext, prop: Int): ExtendedContext = object : ExtendedContext, DiContext by inner {
+            override fun intProperty() = prop
+        }
     }
 }

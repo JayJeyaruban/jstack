@@ -4,10 +4,9 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class Type<T>(val t: KType, private val klass: Class<T>) {
-    override fun equals(other: Any?) =
-        other?.let { it as? Type<*> }?.let {
-            it.t == t
-        } ?: false
+    override fun equals(other: Any?) = other?.let { it as? Type<*> }?.let {
+        it.t == t
+    } ?: false
 
     override fun hashCode() = t.hashCode()
 
