@@ -33,7 +33,6 @@ class Client<C, R : Router<C>> internal constructor(
         val proc = topRouter.f()
         val path = routes[proc]!!
         return { input ->
-            println(path)
             client.send(
                 HttpRequest.newBuilder()
                     .uri(URI.create("$baseUrl/$path/"))
@@ -48,7 +47,7 @@ class Client<C, R : Router<C>> internal constructor(
 fun interface ClientFactory {
     fun clientBuilder(): HttpClient.Builder
 
-    companion object : jstack.core.Loader<DiContext, ClientFactory> {
+    companion object : Loader<DiContext, ClientFactory> {
         override fun DiContext.load() = ClientFactory {
             HttpClient.newBuilder()
                 .executor(retrieve(Executor))
