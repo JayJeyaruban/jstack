@@ -15,7 +15,7 @@ private const val PORT = 8080
 
 class ClientServerTest {
     @Test
-    fun test() = with(DiContext()) {
+    fun test() = with(ConcurrentMapDiContext()) {
         val ex = retrieve(Executor)
         ex.execute {
             val server = HttpServer.create(InetSocketAddress(PORT), 0)
