@@ -1,21 +1,17 @@
 package jstack.log
 
+import jstack.core.Loader
+
 fun interface LoggerFactory {
     fun logger(callSite: CallSite): Logger
 
-    companion object : LoggerFactory {
+    companion object : LoggerFactory, Loader<Any, LoggerFactory> {
         override fun logger(callSite: CallSite) =
             Logger { level, payload ->
                 System.err.println("$level\t${callSite.fullPath}\t${buildMap { payload() }}")
             }
-    }
-}
 
-fun interface LogContext {
-    fun loggerFactory(): LoggerFactory
-
-    companion object {
-        operator fun invoke() = LogContext { LoggerFactory }
+        override fun Any.load(): LoggerFactory = LoggerFactory
     }
 }
 
