@@ -5,17 +5,16 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import jstack.di.DiContext
 import jstack.di.retrieve
-import jstack.log.LogContext
 import jstack.log.logger
 import jstack.log.trace
 import jstack.rpc.ProcedureRoute
 import jstack.rpc.Router
 import jstack.rpc.traverse
 
-fun <C> C.install(
+fun <C : DiContext> C.install(
     server: HttpServer,
     router: Router<C>,
-) where C: DiContext, C: LogContext = server.apply {
+) = server.apply {
     val log by logger()
     executor = retrieve(Executor)
 

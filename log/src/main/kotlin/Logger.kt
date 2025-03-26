@@ -1,5 +1,7 @@
 package jstack.log
 
+import jstack.di.DiContext
+import jstack.di.retrieve
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -22,7 +24,7 @@ class LoggerLoader internal constructor(private val lf: LoggerFactory) {
     }
 }
 
-fun LogContext.logger() = LoggerLoader(loggerFactory())
+fun DiContext.logger() = LoggerLoader(retrieve(LoggerFactory))
 
 fun Logger.info(f: PayloadBuilder.() -> Unit) = log(Level.INFO, f)
 
