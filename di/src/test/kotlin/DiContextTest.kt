@@ -15,7 +15,7 @@ class DiContextTest {
     fun `extend and override`() =
         with(ExtendedContext(DiContext(), 1)) {
             val altB =
-                Loader<ExtendedContext, B> {
+                jstack.core.Loader<ExtendedContext, B> {
                     val mul = intProperty()
                     object : B {
                         override fun b() = mul
@@ -32,7 +32,7 @@ class DiContextTest {
 interface A {
     fun a(): String
 
-    companion object : Loader<DiContext, A> {
+    companion object : jstack.core.Loader<DiContext, A> {
         override fun DiContext.load(): A {
             val b = retrieve(B)
             return object : A {
@@ -45,7 +45,7 @@ interface A {
 interface B {
     fun b(): Int
 
-    companion object : Loader<DiContext, B> {
+    companion object : jstack.core.Loader<DiContext, B> {
         override fun DiContext.load() =
             object : B {
                 override fun b() = 2

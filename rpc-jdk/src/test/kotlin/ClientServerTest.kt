@@ -1,8 +1,8 @@
 package jstack.rpc.jdk
 
 import com.sun.net.httpserver.HttpServer
+import jstack.core.Loader
 import jstack.di.DiContext
-import jstack.di.Loader
 import jstack.di.retrieve
 import jstack.rpc.Router
 import jstack.rpc.procedure
@@ -31,12 +31,12 @@ class ClientServerTest {
         }
 }
 
-object Nested : Router() {
-    val echo by procedure<String, String> { it }
+object Nested : Router<DiContext>() {
+    val echo by procedure { input: String -> input }
 }
 
-object Example : Router() {
+object Example : Router<DiContext>() {
     val nested by router(Nested)
 }
 
-val TestClient = Loader<DiContext, Client<Example>> { client(Example, "http://localhost:$PORT") }
+val TestClient = Loader<DiContext, Client<DiContext, Example>> { client(Example, "http://localhost:$PORT") }

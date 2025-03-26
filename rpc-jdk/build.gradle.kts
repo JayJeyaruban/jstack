@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(project(":di"))
     implementation(project(":rpc"))
 

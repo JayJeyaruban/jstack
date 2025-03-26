@@ -1,9 +1,9 @@
 package jstack.rpc.jdk
 
+import jstack.core.Loader
+import jstack.core.Type
 import jstack.di.DiContext
-import jstack.di.Loader
 import jstack.di.retrieve
-import jstack.rpc.Procedure
 import jstack.rpc.ProcedureRoute
 import jstack.rpc.Router
 import jstack.rpc.traverse
@@ -15,14 +15,21 @@ import java.net.http.HttpRequest.BodyPublishers
 import java.net.http.HttpResponse.BodyHandler
 import java.net.http.HttpResponse.BodySubscribers
 
-class Client<R : Router> internal constructor(
+class Client<C, R : Router<C>> internal constructor(
     private val topRouter: R,
     private val client: HttpClient,
     private val codec: Codec,
     private val baseUrl: String,
-    private val routes: Map<Procedure<*, *>, String>,
 ) {
-    fun <I, O> call(f: R.() -> ProcedureRoute<I, O>): Procedure<I, O> {
+    private val routes by lazy {
+        buildMap {
+            topRouter.traverse { path, proc ->
+                put(proc, path)
+            }
+        }
+    }
+
+    fun <I, O> call(f: R.() -> ProcedureRoute<C, I, O>): (I) -> O {
         val proc = topRouter.f()
         val path = routes[proc]!!
         return { input ->
@@ -41,7 +48,7 @@ class Client<R : Router> internal constructor(
 fun interface ClientFactory {
     fun clientBuilder(): HttpClient.Builder
 
-    companion object : Loader<DiContext, ClientFactory> {
+    companion object : jstack.core.Loader<DiContext, ClientFactory> {
         override fun DiContext.load() =
             ClientFactory {
                 HttpClient.newBuilder()
@@ -50,19 +57,12 @@ fun interface ClientFactory {
     }
 }
 
-fun <R : Router> DiContext.client(
+fun <C, R : Router<C>> DiContext.client(
     router: R,
     baseUrl: String,
-): Client<R> {
-    val routes: Map<Procedure<*, *>, String> =
-        buildMap {
-            router.traverse { path, proc ->
-                put(proc, path)
-            }
-        }
-
+): Client<C, R> {
     val client = retrieve(ClientFactory).clientBuilder().build()
-    return Client(router, client, retrieve(Codec), baseUrl, routes)
+    return Client(router, client, retrieve(Codec), baseUrl)
 }
 
 private fun Codec.publisher(input: Any?): HttpRequest.BodyPublisher? {
@@ -74,7 +74,7 @@ private fun Codec.publisher(input: Any?): HttpRequest.BodyPublisher? {
     return BodyPublishers.ofByteArray(bytes)
 }
 
-private fun <T> Codec.handler(t: Class<T>): BodyHandler<T> {
+private fun <T> Codec.handler(t: Type<T>): BodyHandler<T> {
     return BodyHandler {
         BodySubscribers.mapping(BodySubscribers.ofInputStream()) { input ->
             read(input, t)

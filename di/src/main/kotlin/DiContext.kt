@@ -1,7 +1,7 @@
 package jstack.di
 
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import jstack.core.Loader
+import jstack.core.Type
 
 interface DiContext {
     fun <T> getOrDefault(
@@ -14,28 +14,10 @@ interface DiContext {
     }
 }
 
-inline fun <C : DiContext, reified T> C.retrieve(dep: Loader<C, T>): T {
-    val t = Type.of<T>()
-    return getOrDefault(t) { dep.run { load() } }
-}
+inline fun <C : DiContext, reified T> C.retrieve(dep: Loader<C, T>) = getOrDefault(Type.of<T>()) { dep.run { load() } }
 
 inline fun <C : DiContext, reified T> C.register(dep: Loader<C, T>) {
     retrieve(dep)
-}
-
-class Type<T>(private val t: KType, private val klass: Class<T>) {
-    override fun equals(other: Any?) =
-        other?.let { it as? Type<*> }?.let {
-            it.t == t
-        } ?: false
-
-    override fun hashCode() = t.hashCode()
-
-    fun cast(obj: Any?) = klass.cast(obj)
-
-    companion object {
-        inline fun <reified T> of() = Type(typeOf<T>(), T::class.java)
-    }
 }
 
 internal class MapBasedDiContext : DiContext {
