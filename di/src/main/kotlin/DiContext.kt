@@ -13,8 +13,8 @@ interface DiContext {
 
 inline fun <C : DiContext, reified T> C.retrieve(dep: Loader<C, T>) = getOrDefault(Type.of<T>()) { dep.run { load() } }
 
-inline fun <C : DiContext, reified T> C.register(dep: Loader<C, T>) {
-    retrieve(dep)
+fun <C : DiContext> C.register(vararg deps: Loader<C, *>) {
+    deps.forEach { retrieve(it) }
 }
 
 internal class MapBasedDiContext : DiContext {
