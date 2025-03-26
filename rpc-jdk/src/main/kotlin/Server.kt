@@ -5,14 +5,18 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import jstack.di.DiContext
 import jstack.di.retrieve
+import jstack.log.LogContext
+import jstack.log.logger
+import jstack.log.trace
 import jstack.rpc.ProcedureRoute
 import jstack.rpc.Router
 import jstack.rpc.traverse
 
-fun <C : DiContext> C.install(
+fun <C> C.install(
     server: HttpServer,
     router: Router<C>,
-) = server.apply {
+) where C: DiContext, C: LogContext = server.apply {
+    val log by logger()
     executor = retrieve(Executor)
 
     val codec = retrieve(Codec)
@@ -29,7 +33,10 @@ fun <C : DiContext> C.install(
         }.apply {
             filters.add(
                 Filter.beforeHandler("log") {
-                    println("${it.requestMethod} => ${it.requestURI}")
+                    log.trace {
+                        put("method", it.requestMethod)
+                        put("uri", it.requestURI)
+                    }
                 },
             )
         }
