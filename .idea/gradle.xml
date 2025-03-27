@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/../jstack" name="jstack">
+                <projects>
+                  <project path="$PROJECT_DIR$/../jstack" />
+                  <project path="$PROJECT_DIR$/../jstack/core" />
+                  <project path="$PROJECT_DIR$/../jstack/di" />
+                  <project path="$PROJECT_DIR$/../jstack/log" />
+                  <project path="$PROJECT_DIR$/../jstack/rpc" />
+                  <project path="$PROJECT_DIR$/../jstack/rpc-jdk" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../jstack/buildSrc" name="buildSrc">
+                <projects>
+                  <project path="$PROJECT_DIR$/../jstack/buildSrc" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../jstack" />
+            <option value="$PROJECT_DIR$/../jstack/buildSrc" />
+            <option value="$PROJECT_DIR$/../jstack/core" />
+            <option value="$PROJECT_DIR$/../jstack/di" />
+            <option value="$PROJECT_DIR$/../jstack/log" />
+            <option value="$PROJECT_DIR$/../jstack/rpc" />
+            <option value="$PROJECT_DIR$/../jstack/rpc-jdk" />
+            <option value="$PROJECT_DIR$" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
