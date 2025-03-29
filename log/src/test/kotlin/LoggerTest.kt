@@ -1,10 +1,11 @@
 package jstack.log
 
+import jstack.di.DiContext
 import kotlin.test.Test
 
 class LoggerTest {
     @Test
-    fun test() = with(LogContext()) {
+    fun test() = with(DiContext()) {
         sampleFn()
         val sample = SampleClass(this)
         println("Created sample")
@@ -13,14 +14,14 @@ class LoggerTest {
     }
 }
 
-fun LogContext.sampleFn() {
+fun DiContext.sampleFn() {
     val log by logger()
     log.info {
         put("hello", "world")
     }
 }
 
-class SampleClass(logCtx: LogContext) : LogContext by logCtx {
+class SampleClass(ctx: DiContext) : DiContext by ctx {
     private val log by logger()
 
     fun sample() {
