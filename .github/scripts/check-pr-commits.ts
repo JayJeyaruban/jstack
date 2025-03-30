@@ -76,7 +76,7 @@ async function getPullRequestCommits(): Promise<string[]> {
 }
 
 async function getWorkflowStatus(workflowId: number, commitSha: string): Promise<WorkflowRun['conclusion']> {
-  const url = `${GITHUB_URL}/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowId}/runs?branch=build&per_page=20&head_sha=${commitSha}`
+  const url = `${GITHUB_URL}/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${workflowId}/runs?per_page=20&head_sha=${commitSha}`
   const res = await fetchJson(url);
   let runs: WorkflowRun[] = res.workflow_runs;
   if (runs.length === 0) {
