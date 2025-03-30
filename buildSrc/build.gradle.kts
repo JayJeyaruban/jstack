@@ -14,5 +14,4 @@ dependencies {
     // Add a dependency on the Kotlin Gradle plugin, so that convention plugins can apply it.
     implementation(libs.kotlinGradlePlugin)
     implementation(libs.ktlint)
-//    implementation("org.jlleitschuh.gradle.ktlint:12.2.0")
 }
