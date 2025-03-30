@@ -1,22 +1,20 @@
 package jstack.rpc.jdk
 
-import com.sun.net.httpserver.Filter
+import com.sun.net.httpserver.HttpContext
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
 import jstack.di.DiContext
 import jstack.di.retrieve
-import jstack.log.logger
-import jstack.log.trace
 import jstack.rpc.ProcedureRoute
 import jstack.rpc.Router
 import jstack.rpc.traverse
 
-fun <C : DiContext> C.install(server: HttpServer, router: Router<C>) = server.apply {
-    val log by logger()
+typealias HttpContextConfigurer = HttpContext.() -> Unit
+
+fun <C : DiContext> C.install(server: HttpServer, router: Router<C>, f: HttpContextConfigurer? = null) = server.apply {
     executor = retrieve(Executor)
 
     val codec = retrieve(Codec)
-
     router.traverse { path, proc ->
         createContext("/$path/") { ex ->
             if (ex.requestMethod == "POST") {
@@ -26,16 +24,7 @@ fun <C : DiContext> C.install(server: HttpServer, router: Router<C>) = server.ap
             }
 
             ex.close()
-        }.apply {
-            filters.add(
-                Filter.beforeHandler("log") {
-                    log.trace {
-                        put("method", it.requestMethod)
-                        put("uri", it.requestURI)
-                    }
-                },
-            )
-        }
+        }.apply { f?.invoke(this) }
     }
 }
 
