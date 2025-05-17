@@ -26,3 +26,6 @@ rootProject.name = "jstack"
 include("rpc-jdk")
 include("log")
 include("core")
+
+include("log-slf4j")
+include("log-di")

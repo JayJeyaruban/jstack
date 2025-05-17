@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     implementation(project(":core"))
-
-    testImplementation(kotlin("test"))
+    implementation(project(":di"))
+    api(project(":log"))
 }

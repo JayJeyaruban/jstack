@@ -1,28 +1,27 @@
 package jstack.log
 
-import jstack.di.DiContext
 import kotlin.test.Test
 
 class LoggerTest {
     @Test
-    fun test() = with(DiContext()) {
+    fun test() {
         sampleFn()
-        val sample = SampleClass(this)
+        val sample = SampleClass()
         println("Created sample")
         sample.sample()
         sample.otherMethod()
     }
 }
 
-fun DiContext.sampleFn() {
-    val log by logger()
+fun sampleFn() {
+    val log = LoggerFactory.logger(CallSite.of())
     log.info {
         put("hello", "world")
     }
 }
 
-class SampleClass(ctx: DiContext) : DiContext by ctx {
-    private val log by logger()
+class SampleClass() {
+    private val log = LoggerFactory.logger(CallSite.of())
 
     fun sample() {
         log.info { message("Hello world") }
@@ -30,7 +29,7 @@ class SampleClass(ctx: DiContext) : DiContext by ctx {
 
     fun otherMethod() {
         log.info { message("Before") }
-        val log by logger()
+        val log = LoggerFactory.logger(CallSite.of())
         log.info { message("After") }
     }
 }
