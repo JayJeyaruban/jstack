@@ -2,7 +2,7 @@ package jstack.rpc.jdk
 
 import com.sun.net.httpserver.HttpServer
 import jstack.core.Loader
-import jstack.di.ConcurrentMapBasedDiContext
+import jstack.di.SynchronizedMapBasedDiContext
 import jstack.di.DiContext
 import jstack.di.retrieve
 import jstack.rpc.Router
@@ -16,7 +16,7 @@ private const val PORT = 8080
 
 class ClientServerTest {
     @Test
-    fun test() = with(ConcurrentMapBasedDiContext()) {
+    fun test() = with(SynchronizedMapBasedDiContext()) {
         val ex = retrieve(Executor)
         ex.execute {
             val server = HttpServer.create(InetSocketAddress(PORT), 0)

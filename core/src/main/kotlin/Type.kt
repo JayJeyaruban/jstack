@@ -12,6 +12,8 @@ class Type<T>(val t: KType, private val klass: Class<T>) {
 
     fun cast(obj: Any?) = klass.cast(obj)
 
+    override fun toString() = klass.toString()
+
     companion object {
         inline fun <reified T> of() = Type(typeOf<T>(), T::class.java)
     }
