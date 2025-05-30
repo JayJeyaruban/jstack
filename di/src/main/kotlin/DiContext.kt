@@ -2,7 +2,6 @@ package jstack.di
 
 import jstack.core.Loader
 import jstack.core.Type
-import java.util.concurrent.ConcurrentHashMap
 
 interface DiContext {
     fun <T> getOrDefault(t: Type<T>, f: () -> T): T
@@ -36,18 +35,10 @@ internal class MapBasedDiContext : DiContext {
     }
 }
 
-class ConcurrentMapBasedDiContext : DiContext {
-    private val storage = ConcurrentHashMap<Type<*>, Any?>()
-    private val path = mutableSetOf<Type<*>>()
+class SynchronizedMapBasedDiContext : DiContext {
+    private val inner = MapBasedDiContext()
 
-    override fun <T> getOrDefault(t: Type<T>, f: () -> T): T = t.cast(
-        storage.computeIfAbsent(t) {
-            if (t in path) {
-                error("Cyclic dependency detected: $path")
-            }
-            path.add(t)
-
-            f().also { path.remove(t) }
-        },
-    )
+    override fun <T> getOrDefault(t: Type<T>, f: () -> T): T = synchronized(inner) {
+            inner.getOrDefault(t, f)
+    }
 }
