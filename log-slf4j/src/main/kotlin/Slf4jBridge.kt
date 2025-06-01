@@ -1,9 +1,13 @@
 package jstack.log.slf4j
 
 import jstack.log.CallSite
-import jstack.log.Logger
-import jstack.log.error
+import jstack.log.Configuration
+import jstack.log.ConfigurationFilter
+import jstack.log.Event
+import jstack.log.EventConsumer
+import jstack.log.logLevel
 import jstack.log.message
+import jstack.log.pipe
 import org.slf4j.ILoggerFactory
 import org.slf4j.IMarkerFactory
 import org.slf4j.Marker
@@ -15,20 +19,23 @@ import org.slf4j.helpers.MessageFormatter
 import org.slf4j.spi.MDCAdapter
 import org.slf4j.spi.SLF4JServiceProvider
 import jstack.log.Level as JLevel
-import jstack.log.LoggerFactory as JLoggerFactory
 
-private val LOGGER_ADAPTER_NAME = LoggerAdapter::class.qualifiedName
+private val LOGGER_ADAPTER_NAME = EventConsumerLoggerAdapter::class.qualifiedName
 
-class LoggerAdapter(private val inner: Logger, private val level: Level) : LegacyAbstractLogger() {
-    override fun isTraceEnabled() = isLevelEnabled(Level.TRACE)
+class EventConsumerLoggerAdapter(
+    private val inner: EventConsumer,
+    private val callSite: CallSite,
+    private val level: JLevel,
+) : LegacyAbstractLogger() {
+    override fun isTraceEnabled() = isLevelEnabled(JLevel.TRACE)
 
-    override fun isDebugEnabled() = isLevelEnabled(Level.DEBUG)
+    override fun isDebugEnabled() = isLevelEnabled(JLevel.DEBUG)
 
-    override fun isInfoEnabled() = isLevelEnabled(Level.TRACE)
+    override fun isInfoEnabled() = isLevelEnabled(JLevel.TRACE)
 
-    override fun isWarnEnabled() = isLevelEnabled(Level.WARN)
+    override fun isWarnEnabled() = isLevelEnabled(JLevel.WARN)
 
-    override fun isErrorEnabled() = isLevelEnabled(Level.ERROR)
+    override fun isErrorEnabled() = isLevelEnabled(JLevel.ERROR)
 
     override fun getFullyQualifiedCallerName() = LOGGER_ADAPTER_NAME
 
@@ -40,19 +47,34 @@ class LoggerAdapter(private val inner: Logger, private val level: Level) : Legac
         error: Throwable?,
     ) {
         val message = MessageFormatter.basicArrayFormat(messagePattern, arguments)
-        inner.log(level.intoLevel()) {
-            message(message)
-            error?.let { error(error) }
-        }
+        inner.submit(
+            Event(
+                callSite,
+                level.intoLevel(),
+            ) {
+                message(message)
+                error?.let { error(error) }
+            },
+        )
     }
 
-    private fun isLevelEnabled(other: Level) = level.toInt() >= other.toInt()
+    private fun isLevelEnabled(other: JLevel) = level >= other
 }
 
 object LoggerFactory : ILoggerFactory {
+    private var configuration: Configuration = Configuration.fromEnv()
+    private var sink: EventConsumer = EventConsumer.stderr()
+
+    val consumer by lazy { ConfigurationFilter(configuration).pipe(sink) }
+
+    fun register(configuration: Configuration, sink: EventConsumer) {
+        this.configuration = configuration
+        this.sink = sink
+    }
+
     override fun getLogger(name: String): org.slf4j.Logger {
         val callSite = FqcnCallSite(name)
-        return LoggerAdapter(JLoggerFactory.logger(callSite), Level.TRACE)
+        return EventConsumerLoggerAdapter(consumer, callSite, configuration.logLevel(callSite))
     }
 }
 
@@ -71,7 +93,9 @@ class JStackLogServiceProvider : SLF4JServiceProvider {
     override fun initialize() {}
 }
 
-private data class FqcnCallSite(override val fullPath: String) : CallSite
+private data class FqcnCallSite(val fullPath: String) : CallSite {
+    override val path get() = fullPath.split(".")
+}
 
 private fun Level.intoLevel(): JLevel {
     return when (this) {
