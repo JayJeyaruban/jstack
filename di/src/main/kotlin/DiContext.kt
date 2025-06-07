@@ -2,6 +2,7 @@ package jstack.di
 
 import jstack.core.Loader
 import jstack.core.Type
+import jstack.core.load
 
 interface DiContext {
     fun <T> getOrDefault(t: Type<T>, f: () -> T): T
@@ -11,7 +12,7 @@ interface DiContext {
     }
 }
 
-inline fun <C : DiContext, reified T> C.retrieve(dep: Loader<C, T>) = getOrDefault(Type.of<T>()) { dep.run { load() } }
+inline fun <C : DiContext, reified T> C.retrieve(dep: Loader<C, T>) = getOrDefault(Type.of<T>()) { load(dep) }
 
 inline fun <C : DiContext, reified T> C.register(dep: Loader<C, T>) {
     retrieve(dep)
@@ -39,6 +40,6 @@ class SynchronizedMapBasedDiContext : DiContext {
     private val inner = MapBasedDiContext()
 
     override fun <T> getOrDefault(t: Type<T>, f: () -> T): T = synchronized(inner) {
-            inner.getOrDefault(t, f)
+        inner.getOrDefault(t, f)
     }
 }
