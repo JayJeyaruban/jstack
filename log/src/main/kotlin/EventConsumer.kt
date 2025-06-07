@@ -14,7 +14,14 @@ fun interface EventConsumer {
     }
 }
 
-fun stdEventLineFormat(event: Event) = "${event.level}\t${event.callSite.fullPath}\t${event.payload}}"
+inline fun stdEventLineFormat(
+    event: Event,
+    payloadFormatter: (Payload) -> String = { payload ->
+        payload.map { (key, value) ->
+            "$key=${(value as? Throwable)?.stackTraceToString() ?: value.toString()}"
+        }.joinToString("\t")
+    },
+) = "${event.level}\t${event.callSite.fullPath}\t${payloadFormatter(event.payload)}}"
 
 fun EventConsumer.info(payload: PayloadBuilder) = event(Level.INFO, payload)
 
