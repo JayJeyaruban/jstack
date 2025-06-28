@@ -21,7 +21,7 @@ inline fun stdEventLineFormat(
             "$key=${(value as? Throwable)?.stackTraceToString() ?: value.toString()}"
         }.joinToString("\t")
     },
-) = "${event.level}\t${event.callSite.fullPath}\t${payloadFormatter(event.payload)}}"
+) = "${event.level}\t${event.callSite.fullPath}\t${payloadFormatter(event.payload)}"
 
 fun EventConsumer.info(payload: PayloadBuilder) = event(Level.INFO, payload)
 
