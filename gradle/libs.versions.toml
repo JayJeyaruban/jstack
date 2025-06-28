@@ -4,7 +4,7 @@
 
 [versions]
 kotlin = "2.2.0"
-ktlint = "12.2.0"
+ktlint = "13.0.0"
 
 [libraries]
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

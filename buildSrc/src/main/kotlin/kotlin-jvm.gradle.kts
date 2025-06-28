@@ -29,6 +29,6 @@ tasks.withType<Test>().configureEach {
     }
 }
 
-tasks.classes.configure {
-    dependsOn(tasks.ktlintFormat)
-}
+//tasks.classes.configure {
+//    dependsOn(tasks.ktlintFormat)
+//}
