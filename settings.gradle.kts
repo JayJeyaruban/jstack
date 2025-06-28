@@ -29,3 +29,5 @@ include("core")
 
 include("log-slf4j")
 include("log-di")
+
+include("checkpoint")
