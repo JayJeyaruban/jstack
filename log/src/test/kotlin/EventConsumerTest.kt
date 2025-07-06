@@ -3,7 +3,7 @@ package jstack.log
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class LoggerTest {
+class EventConsumerTest {
     @Test
     fun test() {
         sampleFn()
@@ -43,7 +43,7 @@ class LoggerTest {
 fun sampleFn() {
     val log = CentralEventConsumer
     log.info {
-        put("hello", "world")
+        setAttribute("hello", "world")
     }
 }
 
@@ -70,7 +70,9 @@ private object CentralEventConsumer : EventConsumer {
 }
 
 private fun Event.flatten() = buildMap {
-    payload.forEach { (key, value) -> put(key, value.toString()) }
+    this@flatten.forEach { (key, value) ->
+        put(key, value.value.toString())
+    }
     put("level", level.toString())
     put("call-site", callSite.fullPath)
 }

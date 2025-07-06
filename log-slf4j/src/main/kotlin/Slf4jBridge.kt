@@ -5,6 +5,8 @@ import jstack.log.Configuration
 import jstack.log.ConfigurationFilter
 import jstack.log.Event
 import jstack.log.EventConsumer
+import jstack.log.MutableMapPayloadScope
+import jstack.log.error
 import jstack.log.logLevel
 import jstack.log.message
 import jstack.log.pipe
@@ -51,10 +53,11 @@ class EventConsumerLoggerAdapter(
             Event(
                 callSite,
                 level.intoLevel(),
-            ) {
-                message(message)
-                error?.let { error(error) }
-            },
+                MutableMapPayloadScope().apply {
+                    message(message)
+                    error?.let { error(error) }
+                }.map,
+            ),
         )
     }
 
