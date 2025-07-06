@@ -3,7 +3,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-kotlin = "2.1.10"
+kotlin = "2.2.0"
 ktlint = "12.2.0"
 
 [libraries]
