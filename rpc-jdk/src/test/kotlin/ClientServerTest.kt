@@ -2,8 +2,8 @@ package jstack.rpc.jdk
 
 import com.sun.net.httpserver.HttpServer
 import jstack.core.Loader
-import jstack.di.SynchronizedMapBasedDiContext
 import jstack.di.DiContext
+import jstack.di.SynchronizedMapBasedDiContext
 import jstack.di.retrieve
 import jstack.rpc.Router
 import jstack.rpc.procedure
