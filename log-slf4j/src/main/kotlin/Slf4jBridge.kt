@@ -4,7 +4,7 @@ import jstack.log.CallSite
 import jstack.log.Configuration
 import jstack.log.ConfigurationFilter
 import jstack.log.Event
-import jstack.log.EventConsumer
+import jstack.log.EventLogger
 import jstack.log.MutableMapPayloadScope
 import jstack.log.error
 import jstack.log.logLevel
@@ -22,10 +22,10 @@ import org.slf4j.spi.MDCAdapter
 import org.slf4j.spi.SLF4JServiceProvider
 import jstack.log.Level as JLevel
 
-private val LOGGER_ADAPTER_NAME = EventConsumerLoggerAdapter::class.qualifiedName
+private val LOGGER_ADAPTER_NAME = EventLoggerAdapter::class.qualifiedName
 
-class EventConsumerLoggerAdapter(
-    private val inner: EventConsumer,
+class EventLoggerAdapter(
+    private val inner: EventLogger,
     private val callSite: CallSite,
     private val level: JLevel,
 ) : LegacyAbstractLogger() {
@@ -66,18 +66,18 @@ class EventConsumerLoggerAdapter(
 
 object LoggerFactory : ILoggerFactory {
     private var configuration: Configuration = Configuration.fromEnv()
-    private var sink: EventConsumer = EventConsumer.stderr()
+    private var sink: EventLogger = EventLogger.stderr()
 
     val consumer by lazy { ConfigurationFilter(configuration).pipe(sink) }
 
-    fun register(configuration: Configuration, sink: EventConsumer) {
+    fun register(configuration: Configuration, sink: EventLogger) {
         this.configuration = configuration
         this.sink = sink
     }
 
     override fun getLogger(name: String): org.slf4j.Logger {
         val callSite = FqcnCallSite(name)
-        return EventConsumerLoggerAdapter(consumer, callSite, configuration.logLevel(callSite))
+        return EventLoggerAdapter(consumer, callSite, configuration.logLevel(callSite))
     }
 }
 
