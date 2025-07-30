@@ -18,6 +18,19 @@ class ConfigurationFilter(private val configuration: Configuration) : EventFilte
     }
 }
 
+@JvmInline
+value class DefaultAttributesFilter private constructor(private val attributes: Map<String, PayloadValue.EagerValue<Any>>) : EventFilter {
+    constructor(vararg attributes: Pair<String, Any>) :
+        this(attributes.associate { (key, value) -> key to PayloadValue.EagerValue(value) })
+
+    override fun process(event: Event) = event.copy(
+        payload = buildMap {
+            putAll(attributes)
+            putAll(event.payload)
+        },
+    )
+}
+
 fun composeFilters(vararg filters: EventFilter) = EventFilter {
     var event: Event? = it
     var i = 0
