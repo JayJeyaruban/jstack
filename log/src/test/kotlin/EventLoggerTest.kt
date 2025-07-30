@@ -3,7 +3,7 @@ package jstack.log
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class EventConsumerTest {
+class EventLoggerTest {
     @Test
     fun test() {
         sampleFn()
@@ -17,7 +17,7 @@ class EventConsumerTest {
                 mapOf(
                     "hello" to "world",
                     "level" to "INFO",
-                    "call-site" to "jstack.log.EventConsumerTestKt.sampleFn",
+                    "call-site" to "jstack.log.EventLoggerTestKt.sampleFn",
                 ),
                 mapOf(
                     "message" to "Hello world",
@@ -35,20 +35,20 @@ class EventConsumerTest {
                     "call-site" to "jstack.log.SampleClass.otherMethod",
                 ),
             ),
-            CentralEventConsumer.events.map { it.flatten() },
+            CentralEventLogger.events.map { it.flatten() },
         )
     }
 }
 
 fun sampleFn() {
-    val log = CentralEventConsumer
+    val log = CentralEventLogger
     log.info {
         setAttribute("hello", "world")
     }
 }
 
 class SampleClass() {
-    private val log = CentralEventConsumer
+    private val log = CentralEventLogger
 
     fun sample() {
         log.info { message("Hello world") }
@@ -56,12 +56,12 @@ class SampleClass() {
 
     fun otherMethod() {
         log.info { message("Before") }
-        val log = CentralEventConsumer
+        val log = CentralEventLogger
         log.info { message("After") }
     }
 }
 
-private object CentralEventConsumer : EventConsumer {
+private object CentralEventLogger : EventLogger {
     val events = ArrayList<Event>()
 
     override fun submit(event: Event) {

@@ -8,7 +8,7 @@ fun interface EventFilter {
     }
 }
 
-fun EventFilter.pipe(consumer: EventConsumer) = EventConsumer { event ->
+fun EventFilter.pipe(consumer: EventLogger) = EventLogger { event ->
     process(event)?.let { consumer.submit(it) }
 }
 
