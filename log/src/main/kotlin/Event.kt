@@ -1,8 +1,11 @@
 package jstack.log
 
+import kotlin.time.Instant
+
 data class Event(
     val callSite: CallSite,
     val level: Level,
+    val time: Instant,
     val payload: Payload,
 ) : Payload by payload
 

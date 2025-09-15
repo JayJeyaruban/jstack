@@ -2,6 +2,7 @@ package jstack.log
 
 import java.io.PrintStream
 import kotlin.collections.joinToString
+import kotlin.time.Clock
 
 fun interface EventLogger {
     fun submit(event: Event)
@@ -37,6 +38,7 @@ private fun EventLogger.event(level: Level, payload: PayloadBuilder) = submit(
     Event(
         CallSite.walkBack(3),
         level,
+        Clock.System.now(),
         MutableMapPayloadScope().apply { payload() }.map.toMap(),
     ),
 )
