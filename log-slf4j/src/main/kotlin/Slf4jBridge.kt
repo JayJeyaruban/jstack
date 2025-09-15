@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package jstack.log.slf4j
 
 import jstack.log.CallSite
@@ -20,6 +22,8 @@ import org.slf4j.helpers.LegacyAbstractLogger
 import org.slf4j.helpers.MessageFormatter
 import org.slf4j.spi.MDCAdapter
 import org.slf4j.spi.SLF4JServiceProvider
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import jstack.log.Level as JLevel
 
 private val LOGGER_ADAPTER_NAME = EventLoggerAdapter::class.qualifiedName
@@ -53,6 +57,7 @@ class EventLoggerAdapter(
             Event(
                 callSite,
                 level.intoLevel(),
+                Clock.System.now(),
                 MutableMapPayloadScope().apply {
                     message(message)
                     error?.let { error(error) }
